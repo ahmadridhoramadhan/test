@@ -1,0 +1,10 @@
+service: () -> {
+    addToDo: (text) -> ();
+    addToDoAfter: (nat32, text) -> ();
+    checkToDo: (nat32) -> ();
+    deleteAllToDo: () -> ();
+    deleteToDo: (nat32) -> ();
+    getToDo: () -> (text) query;
+    uncheckToDo: (nat32) -> ();
+    updateToDo: (nat32, text) -> ();
+}
