@@ -1,60 +1,58 @@
-import { Canister, update, text, Void, query, nat32 } from 'azle'
-import { todo } from 'node:test';
+import { Canister, update, text, Void, query, nat32 } from 'azle';
 
-let toDoes = ['']
+let toDos: string[] = [];
 
 export default Canister({
     addToDo: update([text], Void, (newToDo: string) => {
-        if (newToDo == '') {
-            return
+        if (newToDo.trim() !== '') {
+            toDos.push(newToDo.trim());
         }
-        toDoes.push(newToDo)
     }),
 
     getToDo: query([], text, () => {
-        let toDo = "\n \t To Do List \n"
-        let index = 0
-        toDoes.map((value) => {
-            if (value != '') {
-                index++
-                toDo += index + "." + value + '\n'
-            }
-        })
-
-        return toDo
+        let toDo = '\n \t To Do List \n';
+        toDos.forEach((value, index) => {
+            toDo += `${index + 1}. ${value}\n`;
+        });
+        return toDo;
     }),
 
     deleteToDo: update([nat32], Void, (index) => {
-        index++
-        toDoes.splice(index, 1)
+        if (index >= 0 && index < toDos.length) {
+            toDos.splice(index, 1);
+        }
     }),
 
     updateToDo: update([nat32, text], Void, (index, newToDo) => {
-        toDoes[index] = newToDo
+        if (index >= 0 && index < toDos.length) {
+            toDos[index] = newToDo.trim();
+        }
     }),
 
     addToDoAfter: update([nat32, text], Void, (index, newToDo) => {
-        index++
-        toDoes.splice(index, 0, newToDo)
+        if (index >= 0 && index < toDos.length) {
+            index++;
+            toDos.splice(index, 0, newToDo.trim());
+        }
     }),
 
     checkToDo: update([nat32], Void, (index) => {
-        // Tandai tugas sebagai selesai
-        toDoes[index] = toDoes[index] + ' (Done)'
-
-
+        if (index >= 0 && index < toDos.length) {
+            // Mark task as done
+            toDos[index] += ' (Done)';
+        }
     }),
 
     uncheckToDo: update([nat32], Void, (index) => {
-        const text = toDoes[index]
-        const kataLama = " (Done)"
-        const kataBaru = ""
-        toDoes.splice(index, 1, text.replace(kataLama, kataBaru))
-
+        if (index >= 0 && index < toDos.length) {
+            const text = toDos[index];
+            const oldKeyword = ' (Done)';
+            const newKeyword = '';
+            toDos.splice(index, 1, text.replace(oldKeyword, newKeyword));
+        }
     }),
 
     deleteAllToDo: update([], Void, () => {
-        toDoes = ['']
-    })
+        toDos = [];
+    }),
 });
-
